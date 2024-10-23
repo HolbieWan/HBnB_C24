@@ -17,7 +17,7 @@ class BaseModel:
         """Update the attributes of the object based on the provided dictionary"""
         for key, value in data.items():
             if key == 'id' or key == 'created_at' or key == 'updated_at':
-                continue  # Skip read-only fields
+                continue  # (Skip read-only fields)
             if hasattr(self, key):
                 setattr(self, key, value)
         self.save() 

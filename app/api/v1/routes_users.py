@@ -40,6 +40,21 @@ class UserList(Resource):
             'last_name': new_user.last_name,
             'email': new_user.email
         }, 201
+    
+    @api.response(200, 'List of users retrieved successfully')
+    def get(self):
+        """Retrieve a list of all users"""
+        facade = current_app.facade # type: ignore
+        users = facade.get_all_users()
+        user_list = []
+        for user in users:
+            user_list.append({
+                'id': user.id,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'email': user.email
+            })
+        return user_list, 200
 
 @api.route('/<user_id>')
 class UserResource(Resource):
@@ -57,3 +72,15 @@ class UserResource(Resource):
             'last_name': user.last_name,
             'email': user.email
         }, 200
+    
+    @api.response(200, 'User deleted successfully')
+    @api.response(404, 'User not found')
+    def delete(self, user_id):
+        """Delete a user"""
+        facade = current_app.facade # type: ignore
+        user = facade.get_user(user_id)
+        if not user:
+            return {'error': 'User not found'}, 404
+
+        facade.delete_user(user_id)
+        return {'message': f'User {user_id} deleted successfully'}, 200

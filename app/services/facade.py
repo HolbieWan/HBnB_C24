@@ -15,18 +15,33 @@ class HBnBFacade:
 
     # User methods
     def create_user(self, user_data):
+        if not isinstance(user_data.get('first_name'), str) or not (1 <= len(user_data.get('first_name', '')) <= 50):
+            raise ValueError('First_name must be a string between 1 and 50 characters')
+        if not isinstance(user_data.get('last_name'), str) or not (1 <= len(user_data.get('last_name', '')) <= 50):
+            raise ValueError('Last_name must be a string between 1 and 50 characters')
+        
         user = User(**user_data)
         self.user_repo.add(user)
         return user
 
     def get_user(self, user_id):
         return self.user_repo.get(user_id)
+    
+    def get_all_users(self):
+        return self.user_repo.get_all()
 
     def get_user_by_email(self, email):
         return self.user_repo.get_by_attribute('email', email)
+    
+    def delete_user(self, user_id):
+        print(f"Deleting User: {user_id} ")
+        self.user_repo.delete(user_id)
 
     # Amenity methods
     def create_amenity(self, amenity_data):
+        if not isinstance(amenity_data.get('name'), str) or not (1 <= len(amenity_data.get("name", "")) <= 50):
+            raise ValueError('Name must be between 1 and 50 characters')
+        
         amenity = Amenity(**amenity_data)
         self.amenity_repo.add(amenity)
         return amenity
@@ -40,15 +55,24 @@ class HBnBFacade:
     def update_amenity(self, amenity_id, amenity_data):
         self.amenity_repo.update(amenity_id, amenity_data)
 
+    def delete_amenity(self, amenity_id):
+        print(f"Deliting Amenity: {amenity_id} ")
+        self.amenity_repo.delete(amenity_id)
+
+
     # Place methods
     def create_place(self, place_data):
         # Simple validation for price, latitude, and longitude
-        if not isinstance(place_data.get('price'), (int, float)):
+        if not isinstance(place_data.get('price'), (int, float)) or not (1 <= place_data.get("price") <= 1000000):
             raise ValueError('Price must be a number')
-        if not isinstance(place_data.get('latitude'), (int, float)):
+        if not isinstance(place_data.get('latitude'), (int, float)) or not (-90 <= place_data.get("latitude") <= 90):
             raise ValueError('Latitude must be a number')
-        if not isinstance(place_data.get('longitude'), (int, float)):
+        if not isinstance(place_data.get('longitude'), (int, float)) or not (-180 <= place_data.get("longitude") <= 180):
             raise ValueError('Longitude must be a number')
+        if not isinstance(place_data.get('title'), str) or not (1 <= len(place_data.get("title", "")) <= 50):
+            raise ValueError('Title must be between 1 and 50 characters')
+        if not isinstance(place_data.get('description'), str) or not (1 <= len(place_data.get("description", "")) <= 500):
+            raise ValueError('Description must be between 1 and 500 characters')
 
         place = Place(
             title=place_data['title'],
@@ -70,6 +94,10 @@ class HBnBFacade:
     def update_place(self, place_id, place_data):
         self.place_repo.update(place_id, place_data)
 
+    def delete_place(self, place_id):
+        print(f"Deleting Place: {place_id}")
+        self.place_repo.delete(place_id)
+
     # Review methods
     def create_review(self, review_data):
         # Simple validation for user_id, place_id, and rating
@@ -79,6 +107,8 @@ class HBnBFacade:
             raise ValueError('Place does not exist')
         if not isinstance(review_data.get('rating'), int) or not (1 <= review_data['rating'] <= 5):
             raise ValueError('Rating must be an integer between 1 and 5')
+        if not isinstance(review_data.get('comment'), str) or not (1 <= len(review_data.get("comment", "")) <= 500):
+            raise ValueError('Comment must be between 1 and 500 characters')
 
         review = Review(**review_data)
         self.review_repo.add(review)
@@ -97,4 +127,5 @@ class HBnBFacade:
         self.review_repo.update(review_id, review_data)
 
     def delete_review(self, review_id):
+        print(f"Deleting Review: {review_id}")
         self.review_repo.delete(review_id)
