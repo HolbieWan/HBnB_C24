@@ -2,26 +2,13 @@ from base_test import BaseTestClass
 
 class TestReviewEndpoints(BaseTestClass):
 
-    def create_place(self):
-        """Helper method to create a place for testing purposes"""
-        response = self.client.post('/api/v1/places/', json={
-            "title": "Test Place",
-            "description": "A nice test place",
-            "price": 100.0,
-            "latitude": 40.7128,
-            "longitude": -74.0060,
-            "owner_id": self.owner_id,
-            "amenities": [self.amenity1_id, self.amenity2_id]
-        })
-        return response.get_json()['id']
-
     def test_create_review(self):
         """Test creating a new review successfully"""
         response = self.client.post('/api/v1/reviews/', json={
             "comment": "Great place to stay!",
             "rating": 5,
             "user_id": self.owner_id,  # Reusing the user created in BaseTestClass
-            "place_id": self.create_place()  # Create a place for the review
+            "place_id": self.place_id   # Reusing the place created in BaseTestClass
         })
         self.assertEqual(response.status_code, 201)
         data = response.get_json()
@@ -35,7 +22,7 @@ class TestReviewEndpoints(BaseTestClass):
             "comment": "Nice apartment",
             "rating": 4,
             "user_id": self.owner_id,
-            "place_id": self.create_place()
+            "place_id": self.place_id
         })
         response = self.client.get('/api/v1/reviews/')
         self.assertEqual(response.status_code, 200)
@@ -50,7 +37,7 @@ class TestReviewEndpoints(BaseTestClass):
             "comment": "Nice apartment",
             "rating": 4,
             "user_id": self.owner_id,
-            "place_id": self.create_place()
+            "place_id": self.place_id
         })
         review_id = response.get_json()['id']
 
@@ -73,7 +60,7 @@ class TestReviewEndpoints(BaseTestClass):
             "comment": "Average stay",
             "rating": 3,
             "user_id": self.owner_id,
-            "place_id": self.create_place()
+            "place_id": self.place_id
         })
         review_id = response.get_json()['id']
 
@@ -103,7 +90,7 @@ class TestReviewEndpoints(BaseTestClass):
             "comment": "Short stay",
             "rating": 2,
             "user_id": self.owner_id,
-            "place_id": self.create_place()
+            "place_id": self.place_id
         })
         review_id = response.get_json()['id']
 
