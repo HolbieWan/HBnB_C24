@@ -37,7 +37,7 @@ class PlaceList(Resource):
     @api.response(400, 'Invalid input data')
     def post(self):
         """Register a new place"""
-        facade = current_app.facade
+        facade = current_app.facade # type: ignore
         place_data = api.payload
 
         # Validate required fields
@@ -78,7 +78,7 @@ class PlaceList(Resource):
     @api.response(200, 'List of places retrieved successfully')
     def get(self):
         """Retrieve a list of all places"""
-        facade = current_app.facade
+        facade = current_app.facade # type: ignore
         places = facade.get_all_places()
         place_list = []
         for place in places:
@@ -108,7 +108,7 @@ class PlaceResource(Resource):
     @api.response(404, 'Place not found')
     def get(self, place_id):
         """Get place details by ID"""
-        facade = current_app.facade
+        facade = current_app.facade # type: ignore
         place = facade.get_place(place_id)
         if not place:
             return {'error': 'Place not found'}, 404
@@ -140,7 +140,7 @@ class PlaceResource(Resource):
     @api.response(400, 'Invalid input data')
     def put(self, place_id):
         """Update a place's information"""
-        facade = current_app.facade
+        facade = current_app.facade # type: ignore
         place = facade.get_place(place_id)
         if not place:
             return {'error': 'Place not found'}, 404

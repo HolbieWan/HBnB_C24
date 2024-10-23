@@ -21,7 +21,7 @@ class UserList(Resource):
     @api.response(400, 'Email already registered or invalid input data')
     def post(self):
         """Register a new user"""
-        facade = current_app.facade
+        facade = current_app.facade # type: ignore
         user_data = api.payload
 
         # Check if email is already registered
@@ -47,7 +47,7 @@ class UserResource(Resource):
     @api.response(404, 'User not found')
     def get(self, user_id):
         """Get user details by ID"""
-        facade = current_app.facade
+        facade = current_app.facade # type: ignore
         user = facade.get_user(user_id)
         if not user:
             return {'error': 'User not found'}, 404

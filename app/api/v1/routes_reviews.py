@@ -20,7 +20,7 @@ class ReviewList(Resource):
     @api.response(400, 'Invalid input data')
     def post(self):
         """Register a new review"""
-        facade = current_app.facade
+        facade = current_app.facade # type: ignore
         review_data = api.payload
 
         # Validate required fields
@@ -52,7 +52,7 @@ class ReviewList(Resource):
     @api.response(200, 'List of reviews retrieved successfully')
     def get(self):
         """Retrieve a list of all reviews"""
-        facade = current_app.facade
+        facade = current_app.facade # type: ignore
         reviews = facade.get_all_reviews()
         review_list = []
         for review in reviews:
@@ -71,7 +71,7 @@ class ReviewResource(Resource):
     @api.response(404, 'Review not found')
     def get(self, review_id):
         """Get review details by ID"""
-        facade = current_app.facade
+        facade = current_app.facade # type: ignore
         review = facade.get_review(review_id)
         if not review:
             return {'error': 'Review not found'}, 404
@@ -89,7 +89,7 @@ class ReviewResource(Resource):
     @api.response(400, 'Invalid input data')
     def put(self, review_id):
         """Update a review's information"""
-        facade = current_app.facade
+        facade = current_app.facade # type: ignore
         review = facade.get_review(review_id)
         if not review:
             return {'error': 'Review not found'}, 404
@@ -114,7 +114,7 @@ class ReviewResource(Resource):
     @api.response(404, 'Review not found')
     def delete(self, review_id):
         """Delete a review"""
-        facade = current_app.facade
+        facade = current_app.facade # type: ignore
         review = facade.get_review(review_id)
         if not review:
             return {'error': 'Review not found'}, 404
@@ -128,7 +128,7 @@ class PlaceReviewList(Resource):
     @api.response(404, 'Place not found')
     def get(self, place_id):
         """Get all reviews for a specific place"""
-        facade = current_app.facade
+        facade = current_app.facade # type: ignore
         place = facade.get_place(place_id)
         if not place:
             return {'error': 'Place not found'}, 404
