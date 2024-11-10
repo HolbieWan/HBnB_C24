@@ -1,8 +1,8 @@
 # amenity.py
 
 from app.models.base_model import BaseModel
+from app.extensions import db
 
 class Amenity(BaseModel):
-    def __init__(self, name):
-        super().__init__()
-        self.name = name
+    __tablename__ = 'amenities'
+    name = db.Column(db.String(50), nullable=False)

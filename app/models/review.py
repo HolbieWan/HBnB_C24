@@ -1,11 +1,11 @@
 # review.py
 
 from app.models.base_model import BaseModel
+from app.extensions import db
 
 class Review(BaseModel):
-    def __init__(self, user_id, place_id, rating, comment):
-        super().__init__()
-        self.user_id = user_id
-        self.place_id = place_id
-        self.rating = rating
-        self.comment = comment
+    __tablename__ = 'reviews'
+    text = db.Column(db.String(1024), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+    place_id = db.Column(db.String(), nullable=False)
+    user_id = db.Column(db.String(50), nullable=False)

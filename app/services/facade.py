@@ -1,6 +1,6 @@
 # facade.py
 
-from app.persistence.repository import InMemoryRepository
+from app.persistence.repository import SQLAlchemyRepository
 from app.models.user import User
 from app.models.place import Place
 from app.models.review import Review
@@ -8,10 +8,10 @@ from app.models.amenity import Amenity
 
 class HBnBFacade:
     def __init__(self):
-        self.user_repo = InMemoryRepository()
-        self.place_repo = InMemoryRepository()
-        self.review_repo = InMemoryRepository()
-        self.amenity_repo = InMemoryRepository()
+        self.user_repo = SQLAlchemyRepository(User)
+        self.place_repo = SQLAlchemyRepository(Place)
+        self.review_repo = SQLAlchemyRepository(Review)
+        self.amenity_repo = SQLAlchemyRepository(Amenity)
 
     # User methods
     def create_user(self, user_data):
@@ -21,6 +21,8 @@ class HBnBFacade:
             raise ValueError('Last_name must be a string between 1 and 50 characters')
         
         user = User(**user_data)
+        user.hash_password(user_data["password"])
+
         self.user_repo.add(user)
         return user
 
@@ -32,6 +34,11 @@ class HBnBFacade:
 
     def get_user_by_email(self, email):
         return self.user_repo.get_by_attribute('email', email)
+    
+    def update_user(self, user_id, user_data):
+        self.user_repo.update(user_id, user_data)
+        updated_user = self.get_user(user_id)
+        return updated_user
     
     def delete_user(self, user_id):
         print(f"Deleting User: {user_id} ")
@@ -107,8 +114,8 @@ class HBnBFacade:
             raise ValueError('Place does not exist')
         if not isinstance(review_data.get('rating'), int) or not (1 <= review_data['rating'] <= 5):
             raise ValueError('Rating must be an integer between 1 and 5')
-        if not isinstance(review_data.get('comment'), str) or not (1 <= len(review_data.get("comment", "")) <= 500):
-            raise ValueError('Comment must be between 1 and 500 characters')
+        if not isinstance(review_data.get('text'), str) or not (1 <= len(review_data.get("text", "")) <= 500):
+            raise ValueError('Text must be between 1 and 500 characters')
 
         review = Review(**review_data)
         self.review_repo.add(review)

@@ -1,14 +1,16 @@
 # place.py
 
 from app.models.base_model import BaseModel
+from app.extensions import db
 
 class Place(BaseModel):
-    def __init__(self, title, description, price, latitude, longitude, owner_id):
-        super().__init__()
-        self.title = title
-        self.description = description
-        self.price = price
-        self.latitude = latitude
-        self.longitude = longitude
-        self.owner_id = owner_id
-        self.amenities = []
+    __tablename__ = 'places'
+    title = db.Column(db.String(50), nullable=False)
+    description = db.Column(db.String(1024), nullable=False)
+    price = db.Column(db.Float, nullable=False, default=0)
+    latitude = db.Column(db.Float, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
+    owner = db.Column(db.String(50), nullable=True)
+    owner_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+    reviews = db.Column(db.JSON, default=[])
+    amenities = db.Column(db.JSON, default=[])

@@ -1,5 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from flask import current_app
+from flask_jwt_extended import jwt_required, get_jwt_identity # type: ignore
 
 
 api = Namespace('amenities', description='Amenity operations')
@@ -9,15 +10,29 @@ amenity_model = api.model('Amenity', {
     'name': fields.String(required=True, description='Name of the amenity')
 })
 
+auth_header = {'Authorization': {
+        'description': 'Bearer <JWT Token>',
+        'in': 'header',
+        'type': 'string',
+        'required': True
+    }
+}
+
 
 @api.route('/')
 class AmenityList(Resource):
     @api.expect(amenity_model)
     @api.response(201, 'Amenity successfully created')
     @api.response(400, 'Invalid input data')
+    @api.doc('update_user', params=auth_header)
+    @jwt_required()
     def post(self):
         """Register a new amenity"""
-        facade = current_app.facade # type: ignore
+        current_user = get_jwt_identity()
+        if not current_user.get('is_admin'):
+            return {'error': 'Admin privileges required'}, 403
+        
+        facade = current_app.extensions['FACADE']
         amenity_data = api.payload
 
         if not amenity_data.get('name'):
@@ -32,7 +47,7 @@ class AmenityList(Resource):
     @api.response(200, 'List of amenities retrieved successfully')
     def get(self):
         """Retrieve a list of all amenities"""
-        facade = current_app.facade # type: ignore
+        facade = current_app.extensions['FACADE']
         amenities = facade.get_all_amenities()
         amenity_list = []
         for amenity in amenities:
@@ -48,7 +63,7 @@ class AmenityResource(Resource):
     @api.response(404, 'Amenity not found')
     def get(self, amenity_id):
         """Get amenity details by ID"""
-        facade = current_app.facade # type: ignore
+        facade = current_app.extensions['FACADE']
         amenity = facade.get_amenity(amenity_id)
         if not amenity:
             return {'error': 'Amenity not found'}, 404
@@ -61,9 +76,15 @@ class AmenityResource(Resource):
     @api.response(200, 'Amenity updated successfully')
     @api.response(404, 'Amenity not found')
     @api.response(400, 'Invalid input data')
+    @api.doc('update_user', params=auth_header)
+    @jwt_required()
     def put(self, amenity_id):
         """Update an amenity's information"""
-        facade = current_app.facade # type: ignore
+        current_user = get_jwt_identity()
+        if not current_user.get('is_admin'):
+            return {'error': 'Admin privileges required'}, 403
+        
+        facade = current_app.extensions['FACADE']
         amenity = facade.get_amenity(amenity_id)
         if not amenity:
             return {'error': 'Amenity not found'}, 404
@@ -83,7 +104,7 @@ class AmenityResource(Resource):
     @api.response(404, 'Amenity not found')
     def delete(self, amenity_id):
         """Delete an amenity"""
-        facade = current_app.facade # type: ignore
+        facade = current_app.extensions['FACADE']
         amenity = facade.get_amenity(amenity_id)
         if not amenity:
             return {'error': 'Amenity not found'}, 404
