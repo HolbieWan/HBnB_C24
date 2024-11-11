@@ -3,6 +3,7 @@
 from flask_restx import Namespace, Resource, fields
 from flask import current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity # type: ignore
+from app.extensions import bcrypt
 
 
 api = Namespace('users', description='User operations')
@@ -115,7 +116,7 @@ class UserResource(Resource):
             'password' : "****"
         }, 200
     
-    @api.expect(user_update_model)
+    @api.expect(user_model)
     @api.response(200, 'User updated successfully')
     @api.response(404, 'User not found')
     @api.response(400, 'Invalid input data')
@@ -136,6 +137,13 @@ class UserResource(Resource):
             return {'error': f'Unauthorized action, you can only modify your own data'}, 403
 
         user_data = api.payload
+        new_password = user_data["password"]
+        new_password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+        user_data["password"] = new_password
+
+        if not is_admin:
+            user_data["email"] = user.email
+            user_data["password"] = user.password
 
         existing_user = facade.get_user_by_email(user_data['email'])
         if existing_user and user.email != user_data['email']:
