@@ -181,13 +181,7 @@ class PlaceResource(Resource):
             # Update the amenities with the list of IDs
             place.amenities = amenity_ids
 
-        # Update other fields
-        # Remove 'amenities' from place_data to avoid overwriting it
-        place_data_copy = place_data.copy()
-        place_data_copy.pop('amenities', None)
-        place.update(place_data_copy)
-
-        updated_place = facade.get_place(place_id)
+        updated_place = facade.update_place(place_id, place_data)
         return {
             'id': updated_place.id,
             'title': updated_place.title,

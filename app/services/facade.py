@@ -100,6 +100,8 @@ class HBnBFacade:
 
     def update_place(self, place_id, place_data):
         self.place_repo.update(place_id, place_data)
+        updated_place = self.get_place(place_id)
+        return updated_place
 
     def delete_place(self, place_id):
         print(f"Deleting Place: {place_id}")
