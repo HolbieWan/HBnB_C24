@@ -64,7 +64,6 @@ class UserList(Resource):
         facade = current_app.extensions['FACADE']
         user_data = api.payload
 
-        # Check if email is already registered
         existing_user = facade.get_user_by_email(user_data['email'])
         if existing_user:
             return {'error': 'Email already registered'}, 400

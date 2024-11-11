@@ -5,7 +5,6 @@ from flask_jwt_extended import jwt_required, get_jwt_identity # type: ignore
 
 api = Namespace('reviews', description='Review operations')
 
-# Define the review model for input validation and documentation
 review_model = api.model('Review', {
     'text': fields.String(required=True, description='Text of the review'),
     'rating': fields.Integer(required=True, description='Rating of the place (1-5)'),
@@ -36,23 +35,22 @@ class ReviewList(Resource):
 
         place = facade.get_place(review_data['place_id'])
 
-        #verify login
         if review_data["user_id"] != current_user["id"]:
             return {'error': 'Unauthorized action'}, 403
-        #verify if place is owned by reviewer
+
         if place.owner_id == current_user["id"]:
             return {'error': 'Unauthorized action: You cannot review your own place.'}, 403
-        #verify if place already reviewed:
+
         reviews = facade.get_all_reviews()
         for review in reviews:
             if current_user["id"] == review.user_id and place.id == review.place_id:
                 return {'error': 'Unauthorized action: You already reviewed this place.'}, 403
 
-        # Validate required fields
+
         if not all(key in review_data for key in ('user_id', 'place_id', 'rating', 'text')):
             return {'error': 'Missing required fields'}, 400
 
-        # Validate user and place exist
+ 
         user = facade.get_user(review_data['user_id'])
         if not user:
             return {'error': 'User not found'}, 400
@@ -124,13 +122,11 @@ class ReviewResource(Resource):
         if not review:
             return {'error': 'Review not found'}, 404
         
-        #verify login
         if not is_admin and review.user_id != current_user["id"]:
             return {'error': 'Unauthorized action, you can only update your own reviews'}, 403
 
         review_data = api.payload
 
-        #verify login
         if not is_admin and review_data["user_id"] != current_user["id"]:
             return {'error': 'Unauthorized action, a review must contain your id'}, 403
 
@@ -162,7 +158,6 @@ class ReviewResource(Resource):
         if not review:
             return {'error': 'Review not found'}, 404
         
-        #verify login
         if not is_admin and review.user_id != current_user["id"]:
             return {'error': 'Unauthorized action, you can only delete your own reviews'}, 403
 

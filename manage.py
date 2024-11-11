@@ -18,19 +18,17 @@ def create_superuser():
     email = input("Email: ")
     password = input("Password: ")
 
-    # Check if the user already exists
     if User.query.filter_by(email=email).first():
         print("Error: A user with this email already exists.")
         return
 
-    # Create a new superuser
     superuser = User(
         first_name=first_name,
         last_name=last_name,
         email=email,
-        is_admin=True  # Grant admin rights
+        is_admin=True 
     )
-    superuser.hash_password(password)  # Hash the password
+    superuser.hash_password(password)
     db.session.add(superuser)
     db.session.commit()
 

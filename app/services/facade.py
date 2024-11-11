@@ -69,7 +69,6 @@ class HBnBFacade:
 
     # Place methods
     def create_place(self, place_data):
-        # Simple validation for price, latitude, and longitude
         if not isinstance(place_data.get('price'), (int, float)) or not (1 <= place_data.get("price") <= 1000000):
             raise ValueError('Price must be a number')
         if not isinstance(place_data.get('latitude'), (int, float)) or not (-90 <= place_data.get("latitude") <= 90):
@@ -109,7 +108,6 @@ class HBnBFacade:
 
     # Review methods
     def create_review(self, review_data):
-        # Simple validation for user_id, place_id, and rating
         if not self.get_user(review_data.get('user_id')):
             raise ValueError('User does not exist')
         if not self.get_place(review_data.get('place_id')):

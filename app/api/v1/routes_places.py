@@ -5,7 +5,6 @@ from flask_jwt_extended import jwt_required, get_jwt_identity # type: ignore
 
 api = Namespace('places', description='Place operations')
 
-# Define the models for related entities
 amenity_model = api.model('PlaceAmenity', {
     'id': fields.String(description='Amenity ID'),
     'name': fields.String(description='Name of the amenity')
@@ -18,7 +17,6 @@ user_model = api.model('PlaceUser', {
     'email': fields.String(description='Email of the owner')
 })
 
-# Define the place model for input validation and documentation
 place_model = api.model('Place', {
     'title': fields.String(required=True, description='Title of the place'),
     'description': fields.String(description='Description of the place'),
@@ -56,17 +54,14 @@ class PlaceList(Resource):
         if place_data["owner_id"] != current_user["id"]:
             return {'error': 'Unauthorized action, can only create place if you are the owner'}, 403
 
-        # Validate required fields
         required_fields = ['title', 'price', 'latitude', 'longitude', 'owner_id', 'amenities']
         if not all(field in place_data and place_data[field] for field in required_fields):
             return {'error': 'Missing required fields'}, 400
 
-        # Validate owner exists
         owner = facade.get_user(place_data.get('owner_id'))
         if not owner:
             return {'error': 'Owner not found'}, 400
 
-        # Validate amenities exist
         amenity_ids = place_data.get('amenities', [])
         for amenity_id in amenity_ids:
             amenity = facade.get_amenity(amenity_id)
@@ -114,7 +109,7 @@ class PlaceList(Resource):
                 'longitude': place.longitude,
                 'owner_id': place.owner_id,
                 'owner': owner_data,
-                'amenities': place.amenities  # Return the list of IDs
+                'amenities': place.amenities
             })
         return place_list, 200
 
@@ -129,7 +124,6 @@ class PlaceResource(Resource):
         if not place:
             return {'error': 'Place not found'}, 404
 
-        # Get owner details
         owner = facade.get_user(place.owner_id)
         owner_data = {
             'id': owner.id,
@@ -147,7 +141,7 @@ class PlaceResource(Resource):
             'longitude': place.longitude,
             'owner_id': place.owner_id,
             'owner': owner_data,
-            'amenities': place.amenities  # Return the list of IDs
+            'amenities': place.amenities 
         }, 200
 
     @api.expect(place_model)
@@ -171,14 +165,13 @@ class PlaceResource(Resource):
 
         place_data = api.payload
 
-        # Validate and process 'amenities' if provided
         if 'amenities' in place_data:
             amenity_ids = place_data['amenities']
             for amenity_id in amenity_ids:
                 amenity = facade.get_amenity(amenity_id)
                 if not amenity:
                     return {'error': f'Amenity with ID {amenity_id} not found'}, 400
-            # Update the amenities with the list of IDs
+
             place.amenities = amenity_ids
 
         updated_place = facade.update_place(place_id, place_data)
