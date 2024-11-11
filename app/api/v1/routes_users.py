@@ -15,11 +15,11 @@ user_model = api.model('User', {
     'password': fields.String(required=True, description='Password of the user')
 })
 
-user_update_model = api.model('User_update', {
-    'first_name': fields.String(required=True, description='First name of the user'),
-    'last_name': fields.String(required=True, description='Last name of the user'),
-    'email': fields.String(required=True, description='Email of the user'),
-})
+# user_update_model = api.model('User_update', {
+#     'first_name': fields.String(required=True, description='First name of the user'),
+#     'last_name': fields.String(required=True, description='Last name of the user'),
+#     'email': fields.String(required=True, description='Email of the user'),
+# })
 
 auth_header = {'Authorization': {
         'description': 'Bearer <JWT Token>',

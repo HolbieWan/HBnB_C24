@@ -2,6 +2,8 @@
 
 from app.models.base_model import BaseModel
 from app.extensions import db
+from app.models.association_tables import place_amenity
+
 
 class Place(BaseModel):
     __tablename__ = 'places'
@@ -14,3 +16,7 @@ class Place(BaseModel):
     owner_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
     reviews = db.Column(db.JSON, default=[])
     amenities = db.Column(db.JSON, default=[])
+
+    place_owner = db.relationship('User', back_populates='places', lazy=True)
+    review_ids = db.relationship('Review', back_populates='place', lazy=True)
+    amenities_obj = db.relationship('Amenity', secondary=place_amenity, back_populates='places', lazy=True)

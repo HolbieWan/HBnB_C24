@@ -10,7 +10,7 @@ from app.api.v1.routes_reviews import api as reviews_ns
 from app.api.v1.routes_login import api as login_ns
 
 from app.services.facade import HBnBFacade
-from app.extensions import bcrypt, jwt, db
+from app.extensions import bcrypt, jwt, db, migrate
 
 
 def create_app(config_class="config.DevelopmentConfig"):
@@ -20,6 +20,7 @@ def create_app(config_class="config.DevelopmentConfig"):
     db.init_app(app)
     bcrypt.init_app(app)
     jwt.init_app(app)
+    migrate.init_app(app, db) 
 
     facade = HBnBFacade() # type: ignore
     app.extensions['FACADE'] = facade

@@ -13,6 +13,9 @@ class User(BaseModel):
     password = db.Column(db.String(128), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
 
+    places = db.relationship('Place', back_populates='place_owner', lazy=True)
+    reviews = db.relationship('Review', back_populates='user', lazy=True)
+
     def hash_password(self, password):
         """Hash the password before storing it."""
         self.password = bcrypt.generate_password_hash(password).decode('utf-8')
