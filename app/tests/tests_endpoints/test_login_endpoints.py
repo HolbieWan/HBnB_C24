@@ -20,16 +20,13 @@ class TestAuthEndpoints(unittest.TestCase):
 
         facade = cls.app.extensions['FACADE']
         try:
-            # Use the facade to create the user
             cls.test_user = facade.create_user(cls.user_data)
         except ValueError:
-            # User already exists; fetch the existing user
             cls.test_user = facade.get_user_by_email(cls.user_data['email'])
 
     @classmethod
     def tearDownClass(cls):
         """Clean up after tests"""
-        # Remove the test user
         facade = cls.app.extensions['FACADE']
         facade.delete_user(cls.test_user.id)
         cls.app_context.pop()
@@ -41,7 +38,6 @@ class TestAuthEndpoints(unittest.TestCase):
             'password': self.user_data['password']
         }
         response = self.client.post('/api/v1/login/', json=login_data)
-
         self.assertEqual(response.status_code, 200)
         token = response.get_json().get('access_token')
         self.assertIsNotNone(token)
@@ -54,7 +50,6 @@ class TestAuthEndpoints(unittest.TestCase):
             'password': 'wrongpassword'
         }
         response = self.client.post('/api/v1/login/', json=login_data)
-
         self.assertEqual(response.status_code, 401)
         error = response.get_json().get('error')
         self.assertEqual(error, 'Invalid credentials')
@@ -66,10 +61,36 @@ class TestAuthEndpoints(unittest.TestCase):
             'password': 'password123'
         }
         response = self.client.post('/api/v1/login/', json=login_data)
-
         self.assertEqual(response.status_code, 401)
         error = response.get_json().get('error')
         self.assertEqual(error, 'Invalid credentials')
+
+    def test_login_missing_email(self):
+        """Test login endpoint with missing email"""
+        login_data = {
+            'password': self.user_data['password']
+        }
+        response = self.client.post('/api/v1/login/', json=login_data)
+        self.assertEqual(response.status_code, 400)
+        error = response.get_json().get('error')
+        self.assertEqual(error, 'Missing email')
+
+    def test_login_missing_password(self):
+        """Test login endpoint with missing password"""
+        login_data = {
+            'email': self.user_data['email']
+        }
+        response = self.client.post('/api/v1/login/', json=login_data)
+        self.assertEqual(response.status_code, 400)
+        error = response.get_json().get('error')
+        self.assertEqual(error, 'Missing password')
+
+    def test_empty_payload(self):
+        """Test login endpoint with empty payload"""
+        response = self.client.post('/api/v1/login/', json={})
+        self.assertEqual(response.status_code, 400)
+        error = response.get_json().get('error')
+        self.assertEqual(error, 'Missing email')
 
 
 if __name__ == '__main__':

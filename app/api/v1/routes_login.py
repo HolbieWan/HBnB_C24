@@ -18,6 +18,12 @@ class Login(Resource):
         facade = current_app.extensions['FACADE']
 
         credentials = api.payload
+
+        if 'email' not in credentials:
+            return {'error': 'Missing email'}, 400
+        if 'password' not in credentials:
+            return {'error': 'Missing password'}, 400
+        
         email = credentials['email']
        
         user = facade.get_user_by_email(email)
