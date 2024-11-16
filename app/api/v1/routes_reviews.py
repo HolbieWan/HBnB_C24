@@ -34,6 +34,8 @@ class ReviewList(Resource):
         review_data = api.payload
 
         place = facade.get_place(review_data['place_id'])
+        if not place:
+            return {'error': 'Place not found'}, 400
 
         if review_data["user_id"] != current_user["id"]:
             return {'error': 'Unauthorized action'}, 403
