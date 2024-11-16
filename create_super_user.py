@@ -6,12 +6,12 @@ app = create_app('config.DevelopmentConfig')
 
 with app.app_context():
     superuser = User(
-        first_name="Admin",
-        last_name="User",
-        email="admin@gmail.com",
+        first_name="Super",
+        last_name="Admin",
+        email="super.admin@gmail.com",
         is_admin=True
     )
-    superuser.hash_password("securepassword")
+    superuser.hash_password("adminpassword")
     db.session.add(superuser)
     db.session.commit()
 

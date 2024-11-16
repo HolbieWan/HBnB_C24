@@ -18,5 +18,5 @@ class Place(BaseModel):
     amenities = db.Column(db.JSON, default=[])
 
     place_owner = db.relationship('User', back_populates='places', lazy=True)
-    review_ids = db.relationship('Review', back_populates='place', lazy=True)
+    review_ids = db.relationship('Review', back_populates='place', lazy=True, cascade='all, delete-orphan')
     amenities_obj = db.relationship('Amenity', secondary=place_amenity, back_populates='places', lazy=True)
